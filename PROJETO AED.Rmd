@@ -1,0 +1,276 @@
+---
+title: "Análise do Impacto da Pandemia no Bem-Estar Psicológico Infantil"
+author: |
+  Joaquim Oliveira (130657)  
+  João Lourenço (130655)  
+  Francisco Gonçalves (130649)  
+  Martim Santos (130653)  
+  Fábio Gonçalves (130662)
+output: html_document
+---
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+library(readxl)
+library(ggplot2)
+
+dados <- read_excel("EXCEL_AED_R.xlsx")
+
+names(dados)[names(dados) == "P3"] <- "idade"
+names(dados)[names(dados) == "P6"] <- "escolaridade_ee"
+
+dados[dados == 99] <- NA
+
+for (coluna in names(dados)) {
+  if (is.numeric(dados[[coluna]])) {
+    mediana <- median(dados[[coluna]], na.rm = TRUE)
+    dados[[coluna]][is.na(dados[[coluna]])] <- mediana
+  }
+}
+```
+
+# Introdução
+O presente estudo tem como objetivo analisar o impacto da pandemia de COVID-19 no bem-estar psicológico de crianças em idade pré-escolar e do 1.º ciclo, com base em dados recolhidos através do questionário AED_CP19_Saúde. A análise estatística foi realizada com enfoque em variáveis relacionadas com aspetos sociodemográficos (como género, idade, escolaridade da mãe/cuidadora e ciclo escolar), bem como indicadores de saúde emocional e comportamental das crianças (tais como padrões de sono, comportamentos de obediência, irritabilidade, medos, amizades, entre outros). Através de representações gráficas e análises univariadas e bivariadas, procurou-se compreender de que forma estas variáveis se inter-relacionam e como fatores como o género, o ciclo escolar e o número de horas de sono podem influenciar o estado emocional e comportamental dos alunos. Este tipo de análise é essencial para orientar intervenções adequadas e precoces, promovendo a saúde mental infantil num contexto ainda marcado pelas consequências da pandemia.
+
+# Análises Univariadas
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+ggplot(dados, aes(x = as.factor(genero))) +
+  geom_bar(fill = "steelblue") +
+  ggtitle("Distribuição do Género") +
+  xlab("Género") +
+  ylab("Frequência") +
+  theme_minimal()
+```
+
+A distribuição por género mostra uma maioria de alunos que se identificam como feminino, representando cerca de 60% da amostra. Cerca de 38% são do género masculino e aproximadamente 2% identificam-se como outro ou optaram por não responder. Esta diferença de distribuição levou nos a pensar que esta pode influenciar os resultados do bem-estar psicológico de cada individuo, já que existem estudos que indicam variações de sintomas e perceções entre géneros mesmo em idades jovens.
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+ggplot(dados, aes(x = idade)) +
+  geom_histogram(binwidth = 1, color = "white", fill = "darkorange") +
+  ggtitle("Distribuição das Idades") +
+  xlab("Idade") +
+  ylab("Frequência") +
+  theme_minimal()
+```
+
+A análise da idade mostra que a amostra é composta quase exclusivamente por crianças do pré-escolar ao 1.º ciclo. As idades vão dos 3 aos 11 anos, com destaque para os 6 a 9 anos, que representam a esmagadora maioria dos alunos (mais de 80% da amostra). Com esta análise, tiramos a conclusão que esta faixa etária é crucial no desenvolvimento emocional e social, tornando particularmente relevante avaliar os efeitos da pandemia no bem-estar psicológico destas crianças, visto que foi o período particularmente difícil para todas as faixas etárias a nível de saúde mental.
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+ggplot(subset(dados, escolaridade_ee %in% c(1, 2, 3)), aes(x = as.factor(escolaridade_ee))) +
+  geom_bar(fill = "mediumseagreen") +
+  ggtitle("Escolaridade da Mãe ou Cuidadora") +
+  xlab("1=Básico, 2=Secundário, 3=Superior") +
+  ylab("Frequência") +
+  theme_minimal()
+```
+
+A escolaridade das mães ou cuidadoras apresenta-se distribuída entre três níveis:
+• Básico (1)
+• Secundário (2)
+• Superior (3)
+A maior percentagem de cuidadoras/mães tem o ensino secundário completo (aproximadamente 45% da amostra). Segue-se o ensino básico com cerca de 30% e o ensino superior com cerca de 25%. Esta distribuição mostra que, apesar de uma boa parte ter completado pelo menos o secundário, existe ainda um grupo significativo com apenas o ensino básico, o que poderá ter impacto na forma como lidam com questões relacionadas com o bem-estar psicológico dos seus filhos, principalmente após o período da pandemia.
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+ggplot(dados, aes(x = as.factor(cicloescolar))) +
+  geom_bar(fill = "cornflowerblue") +
+  ggtitle("Distribuição por Ciclo Escolar") +
+  xlab("0=Pré-escolar, 1=1.º Ciclo") +
+  ylab("Frequência") +
+  theme_minimal()
+```
+
+A amostra divide-se entre alunos do pré-escolar (0) e do 1.º ciclo (1). Observa-se que cerca de 15% a 20% dos alunos estão no pré-escolar, enquanto os restantes 80% a 85% frequentam o 1.º ciclo. Esta distribuição confirma que a análise da saúde psicológica foca-se sobretudo em crianças na fase inicial de escolaridade, onde o impacto da pandemia pode ter afetado não só o seu bem-estar emocional, mas também aspetos ligados ao desenvolvimento académico e social, que futuramente serão cada vez mais notórios como consequências desse período.
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+ggplot(dados, aes(x = as.factor(Sono_Q556))) +
+  geom_bar(fill = "orchid") +
+  ggtitle("Distribuição de Sono") +
+  xlab("Horas de Sono") +
+  ylab("Frequência") +
+  theme_minimal()
+```
+
+• A maioria dos alunos dorme entre 8 e 9 horas por noite, o que representa cerca de 75% da amostra.
+• Cerca de 15% dorme 7 horas, o que pode ser considerado insuficiente para crianças desta faixa etária.
+• Apenas uma pequena percentagem (cerca de 5%) reporta dormir 10 ou mais horas.
+Esta distribuição indica que, embora a maioria atinja as recomendações mínimas de sono (8 a 9 horas para crianças em idade escolar, de acordo com o Ministério da Saúde de Portugal), existe uma percentagem relevante de alunos que dorme abaixo do recomendado, o que pode ter implicações no bem-estar psicológico e rendimento escolar.
+
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+ggplot(dados, aes(x = as.factor(v22))) +
+  geom_bar(fill = "mediumturquoise") +
+  ggtitle("Distribuição da Variável v22") +
+  xlab("v22") +
+  ylab("Frequência") +
+  theme_minimal()
+```
+
+A distribuição das respostas à variável v22 “É irrequieto, muito mexido, nunca para quieto” mostra que:
+• Cerca de 47% dos alunos consideram que esta afirmação não é verdade.
+• 31% indicam que é pouco verdade.
+• 22% afirmam que é muito verdade.
+
+Estes dados revelam que, embora a maioria dos alunos não se identifique com este comportamento, existe uma percentagem considerável, cerca de 1 em cada 5 alunos, que se considera frequentemente irrequieto ou muito mexido. Este indicador é relevante, uma vez que comportamentos de hiperatividade podem estar associados a dificuldades de concentração, maior agitação em contexto escolar e necessidade de um apoio especializado, especialmente após o contexto de pandemia e adaptação às novas rotinas escolares.
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+ggplot(dados, aes(x = as.factor(v25))) +
+  geom_bar(fill = "tomato") +
+  ggtitle("Distribuição da Variável v25") +
+  xlab("v25") +
+  ylab("Frequência") +
+  theme_minimal()
+```
+
+A distribuição das respostas à variável v25 “Enerva-se muito facilmente e faz muitas birras” mostra que:
+• Cerca de 69% dos alunos consideram que esta afirmação não é verdade.
+• 22% afirmam que é pouco verdade.
+• E aproximadamente 9% dizem que é muito verdade.
+
+Embora a maioria dos alunos não se identifique com este comportamento de irritação e birras frequentes, é importante destacar que quase 1 em cada 10 manifesta que este comportamento é muito presente. Este resultado pode indicar sinais de regulação emocional mais frágeis num grupo específico de crianças, sendo um aspeto relevante para futuras intervenções ou monitorização, sobretudo tendo em conta o contexto pós-pandemia, onde podem ter surgido certos tipos de trauma.
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+ggplot(dados, aes(x = as.factor(Pg))) +
+  geom_bar(fill = "lightskyblue") +
+  ggtitle("Pg: Obedece com facilidade") +
+  xlab("Pg") +
+  ylab("Frequência") +
+  theme_minimal()
+```
+
+A distribuição das respostas à variável Pg “Obedece com facilidade, faz habitualmente o que os adultos lhe mandam” mostra que:
+• 73% dos alunos consideram que esta afirmação é muito verdade, ou seja, afirmam que obedecem com facilidade.
+• Cerca de 22% consideram que é pouco verdade.
+• Apenas cerca de 6% dizem que não é verdade.
+Este resultado revela que a maioria dos alunos parece apresentar um comportamento de obediência e respeito pelas orientações dos adultos, o que pode ser interpretado como um sinal positivo no contexto de socialização e adaptação às rotinas escolares. No entanto, o grupo dos 6% que refere não obedecer com facilidade pode necessitar de uma atenção adicional, sobretudo em ambientes educativos e familiares, o que também pode estar relacionado com a pandemia, devido á privatização dos indivíduos para não espalhar a doença, tornando cada jovem um bocado mais autónomo.
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+ggplot(dados, aes(x = as.factor(Pl))) +
+  geom_bar(fill = "salmon") +
+  ggtitle("Pl: Luta frequentemente com outras crianças") +
+  xlab("Pl") +
+  ylab("Frequência") +
+  theme_minimal()
+```
+
+A distribuição das respostas à variável Pl “Luta frequentemente com as outras crianças, ameaça-as ou intimida-as” mostra que:
+• 79% dos alunos consideram que esta afirmação não é verdade.
+• Cerca de 16% dizem que é pouco verdade.
+• Apenas 4% afirmam que é muito verdade.
+Estes resultados são positivos, na medida em que a esmagadora maioria dos alunos não se identifica com os comportamentos de agressividade, intimidação ou conflito com outras crianças. Ainda assim, é importante notar que cerca de 1 em cada 20 identifica-se com este tipo de comportamentos, o que pode ser indicativo de dificuldades de regulação emocional, impulsividade ou problemas no ambiente social e familiar. Estes casos em específico devem ser acompanhados de perto, especialmente num contexto pós-pandémico onde as relações interpessoais podem ter sido afetadas e devem ser trabalhadas para serem restruturadas caso necessário.
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+ggplot(dados, aes(x = as.factor(Pm))) +
+  geom_bar(fill = "gold") +
+  ggtitle("Pm: Tem pelo menos um bom amigo(a)") +
+  xlab("Pm") +
+  ylab("Frequência") +
+  theme_minimal()
+```
+
+A distribuição das respostas à variável Pm “Tem pelo menos um bom amigo ou boa amiga” mostra que:
+• Cerca de 75% dos alunos afirmam que esta afirmação não é verdade, ou seja, não reconhecem ter pelo menos um bom amigo ou uma boa amiga.
+• Cerca de 21% indicam que é pouco verdade.
+• Apenas 6% consideram que é muito verdade, ou seja, que têm claramente um ou mais bons amigos.
+Esta distribuição levanta uma preocupação importante, uma vez que uma percentagem significativa dos alunos parece não ter relações próximas e significativas com os seus colegas. Em contexto de desenvolvimento infantil, a existência de amizades é um fator essencial para o bem-estar emocional, o que torna este dado um sinal de alerta, especialmente no período pós-pandemia em que as interações sociais foram fortemente afetadas, onde a única forma de  interação com pessoas fora da sua habitação era online.
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+ggplot(dados, aes(x = as.factor(Px))) +
+  geom_bar(fill = "mediumpurple") +
+  ggtitle("Px: Tem muitos medos, assusta-se com facilidade") +
+  xlab("Px") +
+  ylab("Frequência") +
+  theme_minimal()
+```
+
+A distribuição das respostas à variável Px “Tem muitos medos, assusta-se com facilidade” mostra que:
+• Cerca de 60% dos alunos indicam que esta afirmação não é verdade.
+• Cerca de 30% referem que é pouco verdade.
+• Aproximadamente 10% consideram que é muito verdade, ou seja, assumem que têm muitos medos e se assustam com facilidade.
+Ou seja, apesar de a maioria dos alunos não apresentar sintomas de medo excessivo ou de certa forma uma elevada ansiedade, existe um grupo não negligenciável que demonstra alguma ou muita predisposição para o medo. Este tipo de comportamentos pode estar associado a insegurança, falta de estabilidade emocional ou outros fatores psicossociais que merecem atenção, principalmente no contexto da saúde mental infantil após o isolamento social vivido durante a pandemia, devido ao próprio isolamento de cada criança numa idade tão jovem.
+
+# Análises Bivariadas
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+ggplot(subset(dados, !is.na(Sono_Q556) & !is.na(cicloescolar)), aes(x = as.factor(cicloescolar), y = Sono_Q556)) +
+  geom_boxplot(fill = "plum") +
+  ggtitle("Sono vs Ciclo Escolar") +
+  xlab("Ciclo Escolar (0=Pré-escolar, 1=1.º Ciclo)") +
+  ylab("Horas de Sono") +
+  theme_minimal()
+```
+
+Com este gráfico, percebemos então que:
+• As crianças do pré-escolar (0) dormem, em média, mais horas que as do 1.º ciclo (1), apresentando uma mediana próxima das 9 horas.
+• As crianças do 1.º ciclo apresentam uma mediana inferior, mais próxima das 8 horas.
+• Nota-se ainda que a variabilidade no sono é maior no 1.º ciclo, com casos de alunos que dormem apenas 7 horas.
+Apartir disto conseguimos perceber que a transição para o 1.º ciclo pode estar associada a uma redução das horas de sono, seja por exigências escolares ou mudanças na rotina familiar. Esta diferença deve ser considerada na análise do bem-estar geral, dado que o sono insuficiente pode afetar tanto a saúde psicológica como o rendimento académico das crianças, tanto no presente como no futuro, adquirindo maus hábitos. Este ainda pode estar relacionado com a pandemia, devido ao facto de ter havido um confinamento, permitindo às crianças fazerem atividades sem supervisão dos pais até horas mais tardias, tornando o seu período de descanso menor.
+
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+ggplot(subset(dados, !is.na(v22) & !is.na(genero)), aes(x = as.factor(genero), fill = as.factor(v22))) +
+  geom_bar(position = "dodge") +
+  ggtitle("v22: É irrequieto vs Género") +
+  xlab("Género") +
+  ylab("Frequência") +
+  labs(fill = "v22 (0=Não é, 1=Pouco, 2=Muito)") +
+  theme_minimal()
+```
+
+A análise cruzada feita entre v22 “É irrequieto, muito mexido, nunca para quieto” e género revelou diferenças relevante:
+• Os alunos do género masculino apresentam uma maior proporção de respostas “muito verdade” (2), sugerindo uma maior frequência de comportamentos de irrequietude.
+• No género feminino, é mais comum a resposta “não é verdade”, sugerindo uma menor associação com este tipo de comportamento.
+• No grupo “prefiro não responder”, os valores são mais reduzidos, mas há maior dispersão entre as categorias.
+Este padrão sugere que o comportamento de irrequietude pode estar mais presente nos rapazes, o que está de acordo com certos estudos que apontam para uma maior prevalência de agitação e impulsividade em géneros masculinos na infância, comparando ao género feminino.
+
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+ggplot(subset(dados, !is.na(Sono_Q556) & !is.na(v22)), aes(x = as.factor(v22), y = Sono_Q556)) +
+  geom_violin(trim = FALSE, fill = "lightblue") +
+  geom_boxplot(width = 0.1, fill = "white") +
+  ggtitle("Sono vs v22") +
+  xlab("v22 (0=Não é, 1=Pouco, 2=Muito)") +
+  ylab("Horas de Sono") +
+  theme_minimal()
+```
+
+Ainda foi possível analisar a variável v22 com outra, a variável Sono_Q556 que sugeriram resultados interessantes:
+• As crianças que afirmam que “é muito verdade” serem irrequietas (v22 = 2) tendem a ter uma distribuição de horas de sono mais baixa, com concentração entre as 7 e 8 horas.
+• Já aquelas para quem a afirmação “não é verdade” (v22 = 0) tendem a dormir mais, com uma distribuição centrada entre as 8 e 9 horas.
+• Também é de notar uma maior variabilidade nas horas de sono entre os alunos que se consideram pouco irrequietos (v22 = 1), sugerindo que este grupo é mais heterogéneo nos padrões de sono.
+Esta relação sugere que as crianças que dormem menos podem apresentar mais frequentemente comportamentos de agitação ou irrequietude, um resultado alinhado com certos estudos sobre a influência do sono na regulação do comportamento infantil.
+
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+ggplot(subset(dados, !is.na(Pg) & !is.na(cicloescolar)), aes(x = as.factor(cicloescolar), fill = as.factor(Pg))) +
+  geom_bar(position = "fill") +
+  ggtitle("Pg vs Ciclo Escolar") +
+  xlab("Ciclo Escolar") +
+  ylab("Proporção") +
+  labs(fill = "Pg (0=Não é, 1=Pouco, 2=Muito)") +
+  theme_minimal()
+```
+
+Outra análise interessante é entre a variável pg ( “Obedece com facilidade, faz habitualmente o que os adultos lhe mandam”) com a variável do Ciclo Escolar, que mostra análises bastante interessantes:
+• No pré-escolar (0), mais de 50% das crianças consideram que obedecem com facilidade (Pg = 2).
+• No 1.º ciclo (1), a proporção de respostas “muito verdade” desce significativamente para cerca de 35%, sendo substituída por respostas como “pouco verdade” e até “não é verdade” que ganham peso.
+Este padrão é coerente com o desenvolvimento natural da autonomia das crianças. Ao avançarem para o 1.º ciclo, tendem a mostrar mais independência e resistência às ordens dos adultos, o que reduz a perceção de obediência automática que era mais frequente no pré-escolar. Este facto também é complicado de avaliar visto que a idade das crianças ainda é bastante baixa, mas enquanto a criança cresce o comportamento de “ignorar o que lhes é pedido” começa a ser mais notório.
+
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+ggplot(subset(dados, !is.na(Sono_Q556) & !is.na(v25)), aes(x = as.factor(v25), y = Sono_Q556)) +
+  geom_boxplot(fill = "lightcoral") +
+  ggtitle("Sono vs v25") +
+  xlab("v25 (0=Não é, 1=Pouco, 2=Muito)") +
+  ylab("Horas de Sono") +
+  theme_minimal()
+```
+
+Outra relação bastante interessante é entre as variáveis Sono_Q556 e v25 “Enerva-se muito facilmente e faz muitas birras”, visto que, igual ás outras variáveis comparadas há variável referente ás horas de sono, os resultados mostram se de acordo com certos estudos realizados:
+• As crianças que indicam que esta afirmação não é verdade (v25 = 0) têm uma mediana de sono mais elevada, situada entre as 8 e 9 horas.
+• À medida que aumentamos para “pouco verdade” (v25 = 1) e “muito verdade” (v25 = 2), a mediana do sono diminui, aproximando-se das 8 horas ou menos.
+• Existe uma clara relação entre o número de horas de sono e a frequência de comportamentos de irritação e birras.
+Esta relação então pode indicar que dormir menos horas está associado a uma maior probabilidade de a criança se enervar facilmente ou fazer birras com mais frequência, o que está alinhado, novamente, com a literatura sobre o impacto do sono na regulação emocional das crianças. Como curiosidade, os estudos apontam que o mesmo acontece com as restantes faixas etárias, mas quanto mais subimos na escala das faixas etárias, menor é a frequência destes comportamentos de irritação, pois as horas de sono são mais respeitadas.
+
+# Conclusão
+
+A análise descritiva dos dados recolhidos permitiu identificar padrões relevantes no comportamento, emoções e características sociodemográficas das crianças avaliadas. Verificou-se que variáveis como o género e o ciclo escolar influenciam aspetos como a irrequietude, a obediência e os padrões de sono. Observou-se ainda uma percentagem significativa de crianças que apresenta sinais de dificuldades emocionais, tais como medos excessivos, birras frequentes ou ausência de laços de amizade — fatores que podem comprometer o seu desenvolvimento socioemocional. A relação entre a qualidade e quantidade de sono com o comportamento emocional também ficou evidenciada, reforçando a importância do descanso adequado nesta faixa etária. Estes resultados destacam a necessidade de um acompanhamento contínuo e sensível à realidade das crianças no contexto pós-pandémico, promovendo ações educativas, de saúde e de apoio psicológico que ajudem a mitigar os impactos negativos e a fomentar o bem-estar geral na infância.
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
